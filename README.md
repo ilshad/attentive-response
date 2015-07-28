@@ -1,5 +1,7 @@
 # attentive-response
 
+[![Clojars Project](http://clojars.org/ilshad/attentive-response/latest-version.svg)](http://clojars.org/ilshad/attentive-response)
+
 This library provides Ring middleware
 `attentive-response.core/wrap-attentive-response`,
 which automatically encodes response if its body is
