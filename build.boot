@@ -1,9 +1,9 @@
-(def +version+ "0.1.0-SNAPSHOT")
+(def +version+ "0.1.0")
 
 (task-options!
   pom {:project 'ilshad/attentive-response
        :version +version+
-       :description ""
+       :description "Content negotiation and encoding"
        :url "https://github.com/ilshad/attentive-response"
        :scm {:url "https://github.com/ilshad/attentive-response"}
        :license {"Eclipse Public License"

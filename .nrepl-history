@@ -1,2 +1,0 @@
-(require '[attentive-response.core :refer [encode-response-type]])
-(encode-response-type {:headers {"accept" "application/transit+json"}} {:body {:foo [:bar 42]}})
