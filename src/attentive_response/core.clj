@@ -5,21 +5,9 @@
             [cheshire.core :as json])
   (:import [java.io ByteArrayOutputStream]))
 
-(defmulti encode-response-type
-  (fn [request _]
-    (-> (get-in request [:headers "accept"])
-        conneg/best-allowed-content-type
-        vec)))
-
-(defmethod encode-response-type :default [_ response]
-  (merge response
-    {:headers {"Content-Type" "application/json; charset=utf-8"}
-     :body (json/generate-string (:body response))}))
-
-(defmethod encode-response-type ["application" "edn"] [_ response]
-  (merge response
-    {:headers {"Content-Type" "application/edn; charset=utf-8"}
-     :body (pr-str (:body response))}))
+(defn- encode-respone-type* [response content-type body]
+  (-> (assoc-in response [:headers "Content-Type"] content-type)
+      (assoc :body body)))
 
 (defn- write-transit [x t opts]
   (let [baos (ByteArrayOutputStream.)
@@ -29,10 +17,23 @@
     (.reset baos)
     ret))
 
+(defmulti encode-response-type
+  (fn [request _]
+    (-> (get-in request [:headers "accept"])
+        conneg/best-allowed-content-type
+        vec)))
+
+(defmethod encode-response-type :default [_ response]
+  (encode-respone-type* response "application/json; charset=utf-8"
+    (json/generate-string (:body response))))
+
+(defmethod encode-response-type ["application" "edn"] [_ response]
+  (encode-respone-type* response "application/edn; charset=utf-8"
+    (pr-str (:body response))))
+
 (defmethod encode-response-type ["application" "transit+json"] [_ response]
-  (merge response
-    {:headers {"Content-Type" "application/transit+json; charset=utf-8"}
-     :body (write-transit (:body response) :json {})}))
+  (encode-respone-type* response "application/transit+json; charset=utf-8"
+    (write-transit (:body response) :json {})))
 
 (defn wrap-attentive-response [handler]
   (fn [request]
